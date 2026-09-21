@@ -48,8 +48,8 @@ done
 cd "$curDir/bin/python" || exit 1
 
 find . -maxdepth 1 -name "python*.dll" | while read lib; do
-    echo "Moving $lib to $curDir/$lib"
-    cp --parents "$lib" "$curDir"
+    echo "Moving $lib to $curDir/bin/$lib"
+    cp --parents "$lib" "$curDir/bin"
 done
 
 for p in bin/python/lib*; do
