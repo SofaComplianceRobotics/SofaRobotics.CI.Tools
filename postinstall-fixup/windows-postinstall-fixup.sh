@@ -45,6 +45,12 @@ cd "$curDir/$p" && find . -name "*.dll" | while read lib; do
 done
 done
 
+cd "$curDir/bin/python" || exit 1
+
+find . -maxdepth 1 -name "python*.dll" | while read lib; do
+    echo "Moving $lib to $curDir/$lib"
+    cp --parents "$lib" "$curDir"
+done
 
 for p in bin/python/lib*; do
     cd "$curDir/$p" && find . -name "*.dll" | while read lib; do
