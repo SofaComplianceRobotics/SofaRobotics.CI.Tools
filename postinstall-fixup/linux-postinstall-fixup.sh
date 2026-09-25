@@ -159,6 +159,7 @@ done
 
 move_metis "$INSTALL_DIR"
 move_python "$BUILD_DIR" "$INSTALL_DIR"
+move_python_libs
 
 # Fixup RPATH/RUNPATH
 echo "  Fixing RPATH..."

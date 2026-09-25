@@ -29,6 +29,7 @@ clean_default_plugins "$INSTALL_DIR_BIN"
 
 move_metis "$INSTALL_DIR"
 move_python "$BUILD_DIR" "$INSTALL_DIR"
+move_python_libs
 
 # Copy all plugin libs in install/bin (preserving sub-directory structure) to make them easily findable
 curDir="$INSTALL_DIR"

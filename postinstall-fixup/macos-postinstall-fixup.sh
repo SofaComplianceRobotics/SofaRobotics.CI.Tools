@@ -36,6 +36,7 @@ fi
 
 move_metis "$INSTALL_DIR"
 move_python "$BUILD_DIR" "$INSTALL_DIR"
+move_python_libs
 
 
 echo "Fixing up libs manually ..."

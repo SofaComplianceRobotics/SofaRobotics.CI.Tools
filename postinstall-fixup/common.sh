@@ -77,3 +77,22 @@ function move_python()
   echo " - copying $(find ~+ -type d -name "python" | grep $BUILD_DIR/bin/python | head -n 1) $INSTALL_DIR/bin/"
   cp -a "$(find ~+ -type d -name "python" | grep $BUILD_DIR/bin/python | head -n 1)" "$INSTALL_DIR/bin/" || true
 }
+
+function move_python_libs()
+{
+  os="$(uname -s)"
+  cd $INSTALL_DIR/plugins
+  if [[ "$os" == "Darwin" ]]; then
+    # Copy packages
+    find ./ -type f |  sed -n 's|\(.*python3/site-packages\).*|\1|p' | uniq | grep -v '.*SofaPython3.*' | while IFS= read -r line; do
+        cp -R ${line}/* ./SofaPython3/lib/python3/site-packages
+        rm -rf ${line}
+    done
+  else
+    # Copy packages
+    find ./ -type f |  sed -n 's|\(.*python3/site-packages\).*|\1|p' | uniq | grep -v '.*SofaPython3.*' | while IFS= read -r line; do
+        cp -r --preserve=links ${line}/* ./SofaPython3/lib/python3/site-packages
+        rm -rf ${line}
+    done
+  fi
+}
