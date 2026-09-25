@@ -65,7 +65,7 @@ check-all-deps() {
         dependencies="$( otool -L $lib | tail -n +2 | perl -p -e 's/^[\t ]+(.*) \(.*$/\1/g' )"
 
         is_fixup_needed="false"
-        if echo "$dependencies" | grep --quiet "/Python" ||
+        if echo "$dependencies" | grep --quiet "/libpython" ||
            echo "$dependencies" | grep --quiet "/libboost" ||
            echo "$dependencies" | grep --quiet "/libicu"   ||
            echo "$dependencies" | grep --quiet "/libGLEW"  ||
@@ -79,12 +79,13 @@ check-all-deps() {
            echo "$dependencies" | grep --quiet "/liblzma"  ; then
             is_fixup_needed="true"
         fi
+
         if [[ "$is_fixup_needed" == "false" ]]; then
             continue # skip this lib
         fi
 
         (echo "$dependencies") | while read dep; do
-            if libpython="$(echo $dep | egrep -o "/Python.framework.*"  | cut -c2-)" && [ -n "$libpython" ]; then
+            if libpython="$(echo $dep | egrep -o "/libpython[^ ]*\.dylib"  | cut -c2-)" && [ -n "$libpython" ]; then
                 libname="$libpython"
             elif libboost="$(echo $dep | egrep -o "/libboost_[^\/]*?\.dylib" | cut -c2-)" && [ -n "$libboost" ]; then
                 libname="$libboost"
@@ -126,19 +127,15 @@ check-all-deps() {
                 fi
             elif [[ "$mode" == "fixup" ]]; then
                 if [  -n "$libpython" ]; then
-                    rpathlib="$libpython"
+                    rpathlib="@executable_path/python/lib/$(basename "$dep")"
+                elif [ -n "$libglew" ]; then
+                    rpathlib="@executable_path/../lib/$(basename "$dep")"
                 else
-                    rpathlib="$libname"
+                    rpathlib="@rpath/$libname"
                 fi
                 libbasename="$(basename $lib)"
-                echo "install_name_tool -change $dep @rpath/$rpathlib $libbasename"
-                install_name_tool -change $dep @rpath/$rpathlib $lib
-
-                if [  -n "$libpython" ]; then
-                    echo "install_name_tool -add_rpath \"/usr/local/Frameworks/\" $libbasename"
-                    install_name_tool -add_rpath "/usr/local/Frameworks/" $lib
-                    install_name_tool -add_rpath "/opt/homebrew/Frameworks/" $lib
-                fi
+                echo "install_name_tool -change $dep $rpathlib $libbasename"
+                install_name_tool -change "$dep" "$rpathlib" "$lib"
             fi
         done
     done
