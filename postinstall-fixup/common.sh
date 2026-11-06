@@ -40,13 +40,14 @@ function clean_default_plugins()
       ; do
       disabled_plugins=$disabled_plugins'\|'$plugin
   done
-  grep -v $disabled_plugins "$1/plugin_list.conf.default" >> "$1/plugin_list.conf"
-
+  
   # Load SofaPython3 and SofaImGui by default
   for plugin in SofaPython3 SofaImGui; do
-    grep -qxF "$plugin" "$1/plugin_list.conf" ||
-      printf '%s\n' "$plugin" >> "$1/plugin_list.conf"
+    grep -qxF "$plugin" "$1/plugin_list.conf.default" ||
+      printf '%s\n' "$plugin" >> "$1/plugin_list.conf.default"
   done
+  
+  grep -v $disabled_plugins "$1/plugin_list.conf.default" >> "$1/plugin_list.conf"
 }
 
 function move_metis()
